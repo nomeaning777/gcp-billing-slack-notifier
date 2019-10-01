@@ -107,6 +107,10 @@ func BillingNotifier(ctx context.Context, m PubSubMessage) error {
 		return xerrors.Errorf("Failed to check token: %w", err)
 	}
 
+	if message.AlertThresholdExceeded == 0 {
+		return nil
+	}
+
 	slackMsg := &slack.WebhookMessage{Text: GenerateMessage(&message)}
 	if err := slack.PostWebhook(os.Getenv("SLACK_WEBHOOK_URL"), slackMsg); err != nil {
 		return xerrors.Errorf("Failed to post slack: %w", err)
